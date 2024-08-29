@@ -1,0 +1,57 @@
+const SizedBox(height: 10),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              '${_currentExposureOffset.toStringAsFixed(1)}x',
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        RotatedBox(
+                          quarterTurns: 3,
+                          child: Container(
+                            constraints: const BoxConstraints(maxHeight: 200),
+                            child: BlocBuilder<CameraCubit, CameraState>(
+                              builder: (context, state) {
+                                if (state is CameraInitialized) {
+                                  return Slider(
+                                    value: _currentExposureOffset,
+                                    min: state.minAvailableExposureOffset,
+                                    max: state.maxAvailableExposureOffset,
+                                    activeColor: Colors.white,
+                                    inactiveColor: Colors.white30,
+                                    onChanged: (value) async {
+                                      if (mounted) {
+                                        setState(() {
+                                          _currentExposureOffset = value;
+                                        });
+                                      }
+                                      await state.cameraController
+                                          .setExposureOffset(value);
+                                    },
+                                  );
+                                } else {
+                                  return const SizedBox(
+                                    height: 0,
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        const Icon(
+                          Icons.exposure_rounded,
+                          color: Colors.amber,
+                        )
